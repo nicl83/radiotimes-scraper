@@ -12,24 +12,11 @@ import argparse
 
 from PIL import Image
 from pathlib import Path
+from math import floor
 
 # Init temp and output folders
 Path("tmp").mkdir(exist_ok=True)
 Path("out").mkdir(exist_ok=True)
-
-# Configure logging
-log_level = logging.INFO
-
-logger = logging.getLogger()
-logger.setLevel(log_level)
-
-log_console = logging.StreamHandler()
-log_console.setLevel(log_level)
-
-log_formatter = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s")
-log_console.setFormatter(log_formatter)
-
-logger.addHandler(log_console)
 
 # Configure argument parser
 parser = argparse.ArgumentParser(description="Scrape Radio Times issue from Genome into a PDF")
@@ -43,6 +30,11 @@ parser.add_argument(
     help = "Radio Times region, defaults to London (l)",
     default="l",
     type=str
+)
+parser.add_argument(
+    "--debug",
+    help="Set log level to debug",
+    action="store_true"
 )
 
 single_mode.add_argument(
@@ -81,9 +73,26 @@ batch_mode.add_argument(
 )
 
 args = parser.parse_args()
+
+# Configure logging
+if args.debug:
+    log_level = logging.DEBUG
+else:
+    log_level = logging.INFO
+
+logger = logging.getLogger()
+logger.setLevel(log_level)
+
+log_console = logging.StreamHandler()
+log_console.setLevel(log_level)
+
+log_formatter = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s")
+log_console.setFormatter(log_formatter)
+
+logger.addHandler(log_console)
  
 rt_year = args.year
-rt_decade = round(rt_year, -1) # if there's RT issues in the year 10,000, may God help us all
+rt_decade = floor(rt_year / 10) * 10
 
 # extract_page_number = lambda x: int(re.search(r"_(\d*)\.jpg", x).group(1))
 page_number_regex = re.compile(r"_(\d*)\.jpg")
@@ -96,9 +105,13 @@ async def get_rt_issue_pages(decade,year,issue,session: aiohttp.ClientSession):
     logging.info(f"Downloading issue {issue}...")
     root_path = f"https://genome.ch.bbc.co.uk/i/asset/{decade}/{year}/{issue}/{issue}/"
     page_number = 1
+
+    logging.debug(f"Root path for issue is {root_path}")
     
     while True:
-        page_response = await session.get(root_path + f"{page_number}.jpg")
+        page_path = root_path + f"{page_number}.jpg"
+        logging.debug(f"Path for page {page_number} is {page_path}")
+        page_response = await session.get(page_path)
         
         if page_response.status != 200:
             if page_number == 1:
