@@ -29,8 +29,13 @@ Required arguments:
 
 ## Examples
 > `get_rt_issue_async.py --region tv single --year 1952 --issue 1475`
+
 Download the "Television edition" of Radio Times issue 1475
+
 > `get_rt_issue_async.py single --year 2002 --issue 4097`
+
 Download the 4097th issue of Radio Times, using the default London region
+
 > `get_rt_issue_async.py batch --year 2002 --from 4092 --to 4097`
+
 Download issues 4092, 4093, 4094, 4095, 4096 and 4097, again using the default London region.
