@@ -31,6 +31,13 @@ parser.add_argument(
     default="l",
     type=str
 )
+
+parser.add_argument(
+    "--no_region",
+    help = "Don't use a region suffix (required for very early issues)",
+    action="store_true"
+)
+
 parser.add_argument(
     "--debug",
     help="Set log level to debug",
@@ -73,6 +80,9 @@ batch_mode.add_argument(
 )
 
 args = parser.parse_args()
+
+if args.no_region:
+    args.region = ""
 
 # Configure logging
 if args.debug:
