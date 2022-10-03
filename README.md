@@ -9,7 +9,8 @@ This script requires `asyncio`, `aiohttp`, and `Pillow`.
 ## Usage
 You can either download a single issue or a range of issues.
 
-In either mode, you can override the region suffix (defaults to `l` for London) by using `get_rt_issue_async.py --region xx ...`
+In either mode, you can override the region suffix (defaults to `l` for London) by using `get_rt_issue_async.py --region xx ...`.
+If you are trying to download early issues that do not have a region, use the `--no-region` argument (same position as `--region`.)
 
 ### Single-issue mode
 `get_rt_issue_async.py single --year 2002 --issue 4097`
